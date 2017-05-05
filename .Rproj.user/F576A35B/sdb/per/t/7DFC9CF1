@@ -1,0 +1,16 @@
+{
+    "contents" : "##| Compare books to Mike\nsource('common.R')\n\n##|---------------\n##| Explore  data\n##|---------------\nfriend <- 'mike_soltys'\nfriend <- 'jad_taylor'\n\ndf <- read.delim(paste0('data/book_compare_',friend,'.tsv'), \n                  stringsAsFactors = F)\n\ncolnames(df) <- c(\"title\", \"friend_rating\", \"my_rating\")\n\ndf2 <- df %>%\n  mutate(\n    friend_rating = suppressWarnings(as.numeric(substring(friend_rating, 1, 1))),\n    my_rating = suppressWarnings(as.numeric(substring(my_rating, 1, 1))),\n    friend_rating_jitter = jitter(friend_rating),\n    my_rating_jitter = jitter(my_rating),\n    point_size = friend_rating + my_rating\n  )\n\n##| Chart stars scatter\np1 <- nPlot(my_rating_jitter ~ friend_rating_jitter, data = df2, type = 'scatterChart')\np1$xAxis(axisLabel = 'Friend')\np1$yAxis(axisLabel = 'Me')\np1$chart(forceY = c(0, 5))\np1$chart(forceX = c(0, 5))\np1$chart(size = '#! function(d){return d.point_size} !#')\np1$chart(tooltipContent = \"#!\n          function(key, x, y, d){ \n            return '<h3>' + d.point.title + '</h3>' +\n            '<p> Me: ' + d.point.my_rating + '</p>' +\n            '<p> Friend: ' + d.point.friend_rating + '</p>'\n            \n          }\n          !#\")\np1\n\n## TODO\n## - Write a quick book report.\n## - Show the scatter of books \n## - Show a table of star diff where mike is higher in order of grestest to least diff\n## - Show a table of star diff for me vs mike\n## - Show the process of obtaining and munging the data to create these insights\n## - Attempt to explain why I like books more and the kinds of books we like more\n## - Describe \n## - \n\n",
+    "created" : 1425698617273.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2929931311",
+    "id" : "7DFC9CF1",
+    "lastKnownWriteTime" : 1425782438,
+    "path" : "~/Dev/non_work_projects/explore_reading/explore_rating_compare.R",
+    "project_path" : "explore_rating_compare.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

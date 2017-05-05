@@ -1,0 +1,17 @@
+{
+    "contents" : "## common functions\n\nlibrary(dplyr)\nlibrary(rCharts)\nlibrary(lubridate)\n\n##| Convert R dates to javascript dates for use in D3 charts\nto_jsdate <- function(date_){ \n  d <- as.Date(date_) \n  d <- as.POSIXct(format(d, tz=\"GMT\"), origin=\"1970-01-01\") \n  d <- as.numeric(d)\n  d <- d * 1000 \n}\n",
+    "created" : 1425698627541.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "993452688",
+    "id" : "F9E426B8",
+    "lastKnownWriteTime" : 1425782437,
+    "path" : "~/Dev/non_work_projects/explore_reading/common.R",
+    "project_path" : "common.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}

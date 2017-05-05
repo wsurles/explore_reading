@@ -1,0 +1,16 @@
+{
+    "contents" : "##| Explore Reading\nsource('common.R')\n\n##|---------------\n##| Explore  data\n##|---------------\ndf <- read.csv('data/goodreads_export.csv', stringsAsFactors = F)\n\nstr(df)\n\n## Calculate cummulative pages read by year\ndf2 <- df %>%\n  filter(\n    Exclusive.Shelf == 'read',\n    Date.Read != \"\"\n  ) %>%\n  mutate(\n    date = as.Date(Date.Read, format = \"%Y/%m/%d\"),\n    yday = yday(date),\n    year = year(date),\n    pages = Number.of.Pages\n  ) %>%\n  filter(date >= \"2010-01-01\") %>%\n  select(year, yday, pages, Title)\n  \n## Expand Dates\ngrid <- expand.grid(year = unique(df2$year), yday = seq(1:365))\ndf3 <- merge(grid, df2, by=c(\"year\",\"yday\"), all.x = T)\nstr(df3)\n\n## Crunch by year and month\ndf4 <- df3 %>%\n  mutate(\n    date = as.Date(paste0(year,'-',yday), format = \"%Y-%j\"),\n    date_str = as.character(date),\n    month = month(date),\n    pages = ifelse(is.na(pages), 0, pages),\n    title = ifelse(is.na(Title), \"\", Title)\n  ) %>%\n  group_by(year) %>%\n  mutate(\n    cum_year_pages = cumsum(pages)\n  ) %>%\n  filter(date <= today()) %>%\n  arrange(date) %>%\n  data.frame()\n\nstr(df4)\ndf5 <- left_join(df4,df)\n\n##| YOY cumulative by month line\np <- nPlot(cum_year_pages ~ yday, data = df4, group = \"year\", type = 'lineChart')\np$xAxis(axisLabel = 'Day of Year')\np$chart(tooltipContent = \"#!\n        function(key, x, y, d){ \n          return '<h3>' + d.point.year + '</h3>' +\n          '<p><b>' + d.point.date_str + '</b></p>' + \n          '<p><b>'  + 'Total Pages: ' + d.point.cum_year_pages + '</b></p>' +\n          '<p><b>'  + d.point.title + '</b></p>' +\n          '<p><b>'  + 'Pages: ' + d.point.pages + '</b></p>'\n        }\n        !#\")\np$xAxis(\n  # Set the tick labels to month \n  tickFormat=\"#!function(d) {return d3.time.format('%b')(new Date( d * 86400000 ));}!#\"\n  # Put the ticks at the first of each month  \n  ,tickValues = \"#!data[0].values\n      .map(function(v){\n        return v[opts.x]\n      })\n      .filter(function(v){\n        return d3.time.format('%d')(new Date(v*60*60*24*1000)) == '01'\n      })!#\"\n)\np\np$save('reading_william.html', standalone = TRUE)\n\n\n\n",
+    "created" : 1425782402087.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2918805474",
+    "id" : "9F578CE7",
+    "lastKnownWriteTime" : 1428257750,
+    "path" : "~/Dev/non_work_projects/explore_reading/explore_reading.R",
+    "project_path" : "explore_reading.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
